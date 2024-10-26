@@ -1,26 +1,36 @@
 <div class="button-container">
     <h2 class="title">PowerGP Online</h2>
-    
+  
     <div class="button-grid">
+      <!-- Botón que primero genera el token y luego abre el enlace de Plaid -->
       <button type="button" class="btn-custom primary-btn" (click)="authPlaid()">
         <span>Authenticate with Plaid Link Token</span>
       </button>
   
-      <button type="button" class="btn-custom secondary-btn">
-        <span>Integration Setup</span>
+      <!-- Botón oculto que será clicado automáticamente para abrir Plaid Link -->
+      <button
+        *ngIf="tokenFetched"
+        id="plaidLinkButton"
+        class="btn-custom primary-btn"
+        ngxPlaidLink
+        [token]="linkToken"
+        (Success)="onSuccess($event)"
+        (Exit)="onExit($event)"
+        (Event)="onEvent($event)"
+        (Load)="onLoad($event)"
+        (Click)="onClick($event)"
+        style="display: none"
+      >
+        <span>Launch Plaid Link</span>
       </button>
+    </div>
   
-      <button type="button" class="btn-custom success-btn">
-        <span>Transaction Import</span>
-      </button>
-  
-      <button type="button" class="btn-custom danger-btn">
-        <span>Transaction Mapping</span>
-      </button>
-  
-      <button type="button" class="btn-custom info-btn">
-        <span>Credit Card Transaction</span>
-      </button>
+    <!-- Loader para mostrar mientras se genera el token -->
+    <div *ngIf="!tokenFetched" class="lds-ring">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
   </div>
   
