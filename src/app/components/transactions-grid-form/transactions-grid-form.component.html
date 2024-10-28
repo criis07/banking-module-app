@@ -1,1 +1,16 @@
-<p>transactions-grid-form works!</p>
+<div class="institution-container" *ngIf="plaidSuccessEvent?.metadata?.institution?.name">
+    <!-- Mostrar el nombre de la institución -->
+    <h2 class="institution-title">Bank Institution</h2>
+    <p class="institution-name">{{ plaidSuccessEvent?.metadata?.institution?.name }}</p>
+  
+    <!-- Mostrar el selector de cuentas -->
+    <div class="account-select-container" *ngIf="plaidSuccessEvent?.metadata?.accounts?.length">
+      <label for="accounts-select">Select Account</label>
+      <select id="accounts-select" class="account-select" [(ngModel)]="selectedAccount">
+        <option *ngFor="let account of plaidSuccessEvent?.metadata?.accounts" [value]="account.id">
+          {{ account.name }} - {{ account.mask }}
+        </option>
+      </select>
+    </div>  
+  </div>
+  

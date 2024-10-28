@@ -6,6 +6,7 @@ import { NgxPlaidLinkModule } from 'ngx-plaid-link';
 import { PlaidOnEventArgs, PlaidOnExitArgs, PlaidOnSuccessArgs } from 'ngx-plaid-link';
 import { CommonModule } from '@angular/common';
 import { AccessTokenDataEntry } from '../../interfaces/AccessTokenDataEntry';
+import { ShareDataService } from '../../services/share-data.service';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +21,7 @@ export class HomeComponent implements OnInit {
   plaidAuthData: LinkTokenDataEntry;
   plaidAuthPublicToken!: AccessTokenDataEntry;
 
-  constructor(private plaidService: PlaidService, private router: Router) {
+  constructor(private plaidService: PlaidService, private shareDataService: ShareDataService , private router: Router) {
     this.plaidAuthData = {
       user_id: '1',
     };
@@ -36,11 +37,7 @@ export class HomeComponent implements OnInit {
         this.linkToken = response.link_token; // Asumiendo que la respuesta contiene el link_token
         this.tokenFetched = true;
 
-        // Paso 2: Una vez que se obtiene el link_token, abre Plaid Link
-        const plaidLinkButton = document.getElementById('plaidLinkButton');
-        if (plaidLinkButton) {
-          plaidLinkButton.click(); // Simula el clic para abrir Plaid Link
-        }
+        
       },
       (error) => {
         console.error('Error fetching link token', error);
@@ -55,16 +52,17 @@ export class HomeComponent implements OnInit {
       public_token: event.metadata.public_token,
     };
 
-    // Paso 3: Llamar a PlaidService para intercambiar el public_token por el access_token
+    this.shareDataService.setSuccessEvent(event);
+
     this.plaidService.getAccessToken(this.plaidAuthPublicToken).subscribe(
       (response) => {
         const accessToken = response.access_token;
-
-        // Guardar el access_token en localStorage
+        console.log(response);
+        // Save access_token in localStorage
         localStorage.setItem('plaid_access_token', accessToken);
         console.log('Access Token almacenado en localStorage:', accessToken);
 
-        // Opcional: puedes redirigir al usuario a otra página o realizar alguna acción
+        this.router.navigate(['/transactionsForm']);
       },
       (error) => {
         console.error('Error al obtener el access token', error);
@@ -84,7 +82,11 @@ export class HomeComponent implements OnInit {
 
   onLoad(event: any) {
     console.log({ load: event });
-    // Maneja la lógica cuando se carga Plaid Link
+    // Paso 2: Una vez que se obtiene el link_token, abre Plaid Link
+    const plaidLinkButton = document.getElementById('plaidLinkButton');
+    if (plaidLinkButton) {
+      plaidLinkButton.click(); 
+    }
   }
 
   onClick(event: any) {
