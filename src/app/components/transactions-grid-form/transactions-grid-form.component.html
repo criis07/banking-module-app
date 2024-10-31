@@ -6,11 +6,58 @@
     <!-- Mostrar el selector de cuentas -->
     <div class="account-select-container" *ngIf="plaidSuccessEvent?.metadata?.accounts?.length">
       <label for="accounts-select">Select Account</label>
-      <select id="accounts-select" class="account-select" [(ngModel)]="selectedAccount">
+      <select id="accounts-select" class="account-select" [(ngModel)]="selectedAccount" (change)="getTransactionsFromDataBase()">
         <option *ngFor="let account of plaidSuccessEvent?.metadata?.accounts" [value]="account.id">
           {{ account.name }} - {{ account.mask }}
         </option>
       </select>
     </div>  
   </div>
+  
+  <!-- Tabla de Transacciones -->
+  <div class="table-container" *ngIf="transactions.length">
+    <table mat-table [dataSource]="transactions" class="mat-elevation-z8">
+  
+      <!-- Columnas de la Tabla -->
+      <ng-container matColumnDef="transactionID">
+        <th mat-header-cell *matHeaderCellDef> Transaction ID </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.transactionID }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> Date </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.date | date:'short' }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> Description </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.description }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef> Amount </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.amount | currency: transaction.currencyCode }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="currencyCode">
+        <th mat-header-cell *matHeaderCellDef> Currency </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.currencyCode }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef> Category </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.category }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.status }} </td>
+      </ng-container>
+  
+      <!-- Header y Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <div *ngIf="!transactions.length">No transactions available.</div>
   
