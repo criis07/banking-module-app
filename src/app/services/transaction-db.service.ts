@@ -5,6 +5,7 @@ import { TransactionResponseDB } from '../interfaces/TransactionResponseDB';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { APIPlaidResponse } from '../interfaces/APIPlaidResponse';
+import { CreateTransactionsDBResponse } from '../interfaces/CreateTransactionsDBResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,20 @@ export class TransactionDBService {
             return response.data as TransactionResponseDB[]; // Devolvemos data como array de transacciones
           } else {
             throw new Error(response.error?.error_message || 'An unknown error occurred');
+          }
+        })
+      );
+  }
+
+  CreateTransactionReconciliation(entryData: any): Observable<CreateTransactionsDBResponse> {
+    return this.http
+      .post<CreateTransactionsDBResponse>(`${this.apiUrl}/api/v1/transaction-reconciliation`, entryData)
+      .pipe(
+        map((response: CreateTransactionsDBResponse) => {
+          if (response.success) {
+            return response as CreateTransactionsDBResponse;
+          } else {
+            throw new Error('An unknown error occurred');
           }
         })
       );
